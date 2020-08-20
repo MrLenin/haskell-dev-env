@@ -5,7 +5,8 @@ ENV GHC_VERSION=8.8.3 \
     HLS_VERSION=master \
     HIE_VERSION=master \
     HASKELL_LSP_FLAVOUR=hie \
-    LIQUIDHASKELL_VERSION=tags/v8.4.3-final \
+    LIQUIDHASKELL_VERSION=develop \
+    HINDENT_VERSION=master \
     USERNAME=haskeller \
     USER_UID=2001 \
     USER_GID=2001 \
@@ -50,30 +51,38 @@ RUN ((stack ghc -- --version 2>/dev/null) || true) && \
     stack config --system-ghc set resolver $STACK_RESOLVER
 
 # Install LSP (either hie or hls)
-RUN echo "Installing \"${HASKELL_LSP_FLAVOUR}\" LSP server" && \
-    if [ hie = "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
-    then \
-        git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules && \
-        cd haskell-ide-engine && \
-        git checkout ${HIE_VERSION} && \
-        ./cabal-hie-install hie && \
-        ./cabal-hie-install data; \
-    elif [ hls = "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
-    then \
-        git clone https://github.com/haskell/haskell-language-server --recurse-submodules && \
-        cd haskell-language-server && \
-        git checkout ${HLS_VERSION} && \
-        ./cabal-hls-install hls && \
-        ./cabal-hls-install data; \
-    elif [ ghcide == "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
-    then \
-        cabal install ghcide ; \
-    else \
-        echo "Unknown LSP flavour \"${HASKELL_LSP_FLAVOUR}\". Valid options are \"hie\", \"hls\", \"ghcide\" or \"all\"" 1>&2 && exit 1; \
-    fi
+#RUN echo "Installing \"${HASKELL_LSP_FLAVOUR}\" LSP server" && \
+#    if [ hie = "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
+#    then \
+RUN git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules && \
+    cd haskell-ide-engine && \
+    git checkout ${HIE_VERSION} && \
+    git submodule update --init --recursive && \
+    ./cabal-hie-install hie && \
+    ./cabal-hie-install data;
+#    elif [ hls = "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
+#    then \
+RUN git clone https://github.com/haskell/haskell-language-server --recurse-submodules && \
+    cd haskell-language-server && \
+    git checkout ${HLS_VERSION} && \
+    git submodule update --init --recursive && \
+    ./cabal-hls-install hls && \
+    ./cabal-hls-install data;
+#    elif [ ghcide == "${HASKELL_LSP_FLAVOUR}" -o all = "${HASKELL_LSP_FLAVOUR}" ] ; \
+#    then \
+#        cabal install ghcide ; \
+#    else \
+#        echo "Unknown LSP flavour \"${HASKELL_LSP_FLAVOUR}\". Valid options are \"hie\", \"hls\", \"ghcide\" or \"all\"" 1>&2 && exit 1; \
+#    fi
+
+RUN git clone https://github.com/tomsmeding/hindent.git --recurse-submodules && \
+    cd hindent && \
+    git checkout ${HINDENT_VERSION} && \
+    git submodule update --init --recursive && \
+    cabal v2-install
 
 # Install packages
-RUN cabal install phoityne-vscode alex c2hs cpphs doctest happy haskell-dap hlint stylish-haskell hoogle retrie QuickCheck
+RUN cabal install phoityne-vscode alex c2hs cpphs doctest happy haskell-dap hlint stylish-haskell hoogle retrie QuickCheck hie-bios implicit-hie
 
 # Install LiquidHaskell from source (because of the isue: https://github.com/ucsd-progsys/liquidhaskell/issues/1680)
 # TODO: Temprorary disable liquidhaskell building, since it is having some issues on 8.8.3

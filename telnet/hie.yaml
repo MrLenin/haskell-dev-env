@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "telnet:lib"
+
+    - path: "./app/Main.hs"
+      component: "telnet:exe:telnet-exe"
+
+    - path: "./app/Paths_telnet.hs"
+      component: "telnet:exe:telnet-exe"
+
+    - path: "./test"
+      component: "telnet:test:telnet-test"

@@ -6,10 +6,11 @@
     "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
         "languageServerHaskell.hlintOn": true,
-        "languageServerHaskell.liquidOn": true,
+        "languageServerHaskell.liquidOn": false,
         "languageServerHaskell.enableHIE": true,
-        "languageServerHaskell.hieVariant": "haskell-ide-engine"
-        // "languageServerHaskell.hieVariant": "haskell-language-server", // Uncomment, if hls is used.
+        "languageServerHaskell.hieExecutablePath": "~/.cabal/bin/haskell-language-server-wrapper",
+        //"languageServerHaskell.hieVariant": "haskell-ide-engine"
+        "languageServerHaskell.hieVariant": "haskell-language-server" // Uncomment, if hls is used.
         // "languageServerHaskell.hieVariant": "ghcide" // Uncomment if ghcide is used.
     },
     "remoteUser": "haskeller",

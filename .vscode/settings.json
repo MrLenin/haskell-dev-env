@@ -1,0 +1,4 @@
+{
+    "languageServerHaskell.hieVariant": "haskell-language-server",
+    "languageServerHaskell.hieExecutablePath": "~/.cabal/bin/haskell-language-server-wrapper"
+}
